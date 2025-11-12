@@ -2,7 +2,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.model_selection import KFold
+from sklearn.model_selection import KFold, GridSearchCV
 from sklearn.metrics import mean_absolute_error, r2_score
 
 def load_data():
@@ -84,3 +84,20 @@ def cross_validate_model(model_class, X, y, kfold, **model_params):
     print(f"  Test MAE:  {np.mean(results['test_mae']):.2f}")
 
     return results
+
+
+def get_optimal_params(model, param_grid, X, y, kfold):
+    grid_search = GridSearchCV(
+        estimator=model,
+        param_grid=param_grid,
+        cv=kfold,
+        scoring='r2',
+        return_train_score=True,
+        n_jobs=-1
+    )
+
+    grid_search.fit(X, y)
+
+    print(f"Best params: {grid_search.best_params_}")
+
+    return grid_search.best_params_
